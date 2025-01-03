@@ -56,16 +56,16 @@ class SnakeGame:
   def reset(self): #game state
     self.heading = Heading.RIGHT
     self.position = Point(self.width / 2, self.height / 2)
-    self.snake = [self.position, Point(self.head.x - SQR_SIZE, self.head.y), 
-                  Point(self.head.x - (2 * SQR_SIZE), self.head.y)]
+    self.snake = [self.position, Point(self.position.x - SQR_SIZE, self.position.y), 
+                  Point(self.position.x - (2 * SQR_SIZE), self.position.y)]
     self.score = 0
     self.food = None
     self._position_food()
     self.frame_iteration = 0
 
   def _position_food(self):
-    x = random.randint(0, (self.width - SQR_SIZE)) * SQR_SIZE
-    y = random.randint(0, (self.height - SQR_SIZE)) * SQR_SIZE
+    x = random.randint(0, (self.width - SQR_SIZE) // SQR_SIZE) * SQR_SIZE
+    y = random.randint(0, (self.height - SQR_SIZE) // SQR_SIZE) * SQR_SIZE
     self.food = Point(x, y)
     if self.food in self.snake:
       self._position_food()
@@ -80,25 +80,25 @@ class SnakeGame:
     return False
 
   def play_step(self, action):
-    self.frame_iteraion += 1
+    self.frame_iteration += 1
     for event in pygame.event.get():
       if event.type == pygame.QUIT:
         pygame.quit()
         quit()
     self._move(action)
-    self.snake.insert(0, self.head)
+    self.snake.insert(0, self.position)
     reward = 0
     game_end = False
     if self.check_collision() or self.frame_iteration > 100 * len(self.snake):
       game_end = True
       reward -= 10
-    if self.head == self.head:
+    if self.position == self.food:
       self.score += 1
       reward = 10
       self._position_food()
     else:
       self.snake.pop()
-    self._update_ui()
+    self._update_screen()
     self.clock.tick(SPEED)
     return reward, game_end, self.score
 
