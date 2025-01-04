@@ -4,13 +4,19 @@ import numpy as np
 from collections import deque
 from game import SnakeGame, Heading, Point
 from trainer import QNet, QTrainer
+from constants import MAX_MEMORY, BATCH_SIZE, LR
 from plots import plot
 
-MAX_MEMORY = 100000
-BATCH_SIZE = 1000
-LR = 0.001 # tweak
-
+"""
+Agent is the trainer that utilizes the QNet and QTrainer class to implement a trainer
+on the snake game. 
+"""
 class Agent:
+
+  """
+  __init__(self) initializes the Agent object by setting its parameters to default
+  paramters, and intializing the QNet model and QTrainer trainer.
+  """
   def __init__(self):
     self.n_games = 0
     self.epsilon = 0
@@ -19,6 +25,11 @@ class Agent:
     self.model = QNet(11, 256, 3)
     self.trainer = QTrainer(self.model, lr = LR, gamma = self.gamma)
 
+  """
+  get_state(self, game) returns the current game state which contains encoded
+  information about the positioning of the snake, its heading, and the position
+  of the food on the game screen.
+  """
   def get_state(self, game):
     position = game.snake[0]
     left = Point(position.x - 20, position.y)
@@ -57,9 +68,17 @@ class Agent:
              game.food.y > game.position.y]
     return np.array(state, dtype = int)
   
+  """
+  remember(self, state, action, reward, next_state, end) adds the state paramters
+  obtained as arguments to the model memory of the agent.
+  """
   def remember(self, state, action, reward, next_state, end):
     self.memory.append((state, action, reward, next_state, end))
 
+  """
+  train_long_memory(self) trains the trainer on the state paramters obtained from
+  the long memory states.
+  """
   def train_long_memory(self):
     if len(self.memory) > BATCH_SIZE:
       sample = random.sample(self.memory, BATCH_SIZE)
@@ -69,9 +88,17 @@ class Agent:
     states, actions, rewards, next_states, ends = zip(*sample)
     self.trainer.train(states, actions, rewards, next_states, ends)
   
+  """"
+  train_short_memory(self, state, action, reward, next_state, end) trains the model
+  trainer on the arguments.
+  """
   def train_short_memort(self, state, action, reward, next_state, end):
     self.trainer.train(state, action, reward, next_state, end)
 
+  """
+  get_action(self, state) returns the optimal move as determined by the agent after
+  applying the QTrainer and the QNet on the current game state.
+  """
   def get_action(self, state):
     self.epsilon = 80 - self.n_games
     final_move = [0, 0, 0]
@@ -86,6 +113,12 @@ class Agent:
 
     return final_move
 
+"""
+train() initializes the game, trainer, and agent to initiate the Q-learning process.
+After termination of each game, the function generates a plot by calling the function
+plot() which generates a data point on the plot corresponding to the program's
+performance in the current iteration.
+"""
 def train():
   scores = []
   mean_scores = []

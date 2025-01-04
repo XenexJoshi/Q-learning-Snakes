@@ -4,17 +4,39 @@ import torch.optim as optim
 import torch.nn.functional as F
 import os
 
+"""
+QNet represents the neural network used by the QLearner to determine the most effective
+action for the current game state.
+"""
 class QNet(nn.Module):
+
+  """
+  __init__(self, input_size, hidden_size, optput_size) initializes a neural network
+  with input layer, hidden layer, and output layer. The input layer has input_size
+  nodes, the hidden layer has hidden_size nodes, and the output layer has output_size
+  nodes.
+  """
   def __init__(self, input_size, hidden_size, output_size):
     super().__init__()
     self.linear1 = nn.Linear(input_size, hidden_size)
     self.linear2 = nn.Linear(hidden_size, output_size)
 
+  """
+  forward(self, x) is the forward pass function for the neural network that combines
+  the input layer to the hidden layer, and hidden layer to the output function using
+  a linear neural network.
+  """
   def forward(self, x):
     x = F.relu(self.linear1(x))
     x = self.linear2(x)
     return x
   
+  """
+  save(self, filepath) saves the model data for the current version of the learned
+  neural network in the argument file_name. If file_name does not exist yet, the
+  function creates a file with the filepath, and then saves the current learned
+  data.
+  """
   def save(self, file_name = 'model.pth'):
     model_file_path = './model'
     if not os.path.exists(model_file_path):
@@ -23,7 +45,19 @@ class QNet(nn.Module):
     filename = os.path.join(model_file_path, file_name)
     torch.save(self.state_dict(), filename)
 
+
+"""
+QTrainer is the trainer that uses the QNet neural network, and implements the Bellman
+equation to select the optimal action for the current game state, to train the
+program to choose optimal moves to maximize game score.
+"""
 class QTrainer:
+
+  """
+  __init__(self, model, lr, gamma) initializes the QTrainer with the arguments as
+  parameters for the trainer. The trainer uses Adam optimizer, and mean-squared loss
+  as the optimization criterion.
+  """
   def __init__(self, model, lr, gamma):
     self.model = model
     self.lr = lr
@@ -31,6 +65,11 @@ class QTrainer:
     self.optimizer = optim.Adam(model.parameters(), lr = self.lr)
     self.criterion = nn.MSELoss()
 
+  """
+  train(self, state, action, reward, next_state, end) uses the Bellman equation
+  to compute the optimal next_state given the current state state, and action 
+  action, with the reward reward until the game states reaches end state.
+  """
   def train(self, state, action, reward, next_state, end):
     state = torch.tensor(state, dtype = torch.float)
     next_state = torch.tensor(next_state, dtype = torch.float)
