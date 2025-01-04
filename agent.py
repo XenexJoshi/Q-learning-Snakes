@@ -85,7 +85,7 @@ class Agent:
       final_move[move] = 1
 
     return final_move
-  
+
 def train():
   scores = []
   mean_scores = []
@@ -116,6 +116,3 @@ def train():
       mean_score = total_score / agent.n_games
       mean_scores.append(mean_score)
       plot(scores, mean_scores)
-
-if __name__ == '__main__':
-  train()
