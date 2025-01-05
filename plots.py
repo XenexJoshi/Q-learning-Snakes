@@ -4,12 +4,12 @@ from IPython import display
 # Initialzing matplotlib window
 plt.ion()
 
-"""
-plot(scores, mean_val) plots the scores and mean_val on the y-axis with the game
-id(number of game) on the x-axis to depict the progression of the Q-learner with
-number of games played.
-"""
 def plot(scores, mean_val):
+  """
+  plot(scores, mean_val) plots the scores and mean_val on the y-axis with the game
+  id(number of game) on the x-axis to depict the progression of the Q-learner with
+  number of games played.
+  """
   display.clear_output(wait = True)
   display.display(plt.gcf())
   plt.clf()
