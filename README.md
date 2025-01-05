@@ -20,3 +20,7 @@ It is recommended to setup a Python virtual environment, and install the depende
     .venv\Scripts\activate **windows**
     pip install pygame torch numpy
     pip install matplotlib ipython
+
+Attached below is the progression plot after running the trainer for 100 iterations. The scores started to increase substantially after 80 runs, after which the program began to exploit its previous data rather than explore new strategies i.e. the program transitioned from its exploration stage to its exploitation stage. The highest score achieved during this session was 55.
+<img width="625" alt="Screenshot 2025-01-04 at 6 44 10 PM" src="https://github.com/user-attachments/assets/d4ba6178-2707-4e50-a58e-f7e54d8877a1" />
+
